@@ -88,9 +88,9 @@ app.use((req, res, next) => {
 });
 
 // Routes
-app.use("/listings", listingsRouter);
-app.use("/listings/:id/reviews", reviewsRouter);
-app.use("/", usersRouter);
+app.use("api/listings", listingsRouter);
+app.use("api/listings/:id/reviews", reviewsRouter);
+app.use("api/", usersRouter);
 
 // Middleware
 app.all("*", (req, res, next) => {
