@@ -5,10 +5,12 @@ const wrapAsync = require("../utils/wrapAsync.js");
 const passport = require("passport");
 const flash = require("connect-flash");
 
+// Signup form
 router.get("/signup", (req, res) => {
     res.render("users/signup.ejs");
 });
 
+// Signup handler
 router.post("/signup", wrapAsync(async (req, res) => {
     try {
         let { username, email, password } = req.body;
@@ -17,31 +19,30 @@ router.post("/signup", wrapAsync(async (req, res) => {
         console.log(registeredUser);
         req.flash("success", "Welcome to Wanderlust");
         res.redirect("/listings");
-    }
-    catch (e) {
+    } catch (e) {
         req.flash("error", e.message);
         res.redirect("/signup");
     }
 }));
 
+// Login form
 router.get("/login", (req, res) => {
-  res.render("users/login");
+    res.render("users/login");
 });
 
-// Handle login
-// Handle login (email or username support)
+// Handle login (username or email)
 router.post(
   "/login",
   wrapAsync(async (req, res, next) => {
     const { username, password } = req.body;
 
-    // If input is email, fetch the user and convert to username
+    // Support login with email
     let loginUsername = username;
     if (username.includes("@")) {
       const user = await User.findOne({ email: username });
       if (!user) {
         req.flash("error", "Invalid email or password");
-        return res.redirect("/user/login");
+        return res.redirect("/login");  // ✅ fixed
       }
       loginUsername = user.username;
     }
@@ -50,7 +51,7 @@ router.post(
       if (err) return next(err);
       if (!user) {
         req.flash("error", "Invalid username or password");
-        return res.redirect("/user/login");
+        return res.redirect("/login");  // ✅ fixed
       }
       req.logIn(user, (err) => {
         if (err) return next(err);
@@ -60,7 +61,6 @@ router.post(
     })({ ...req, body: { ...req.body, username: loginUsername } }, res, next);
   })
 );
-
 
 // Logout
 router.get("/logout", (req, res) => {
